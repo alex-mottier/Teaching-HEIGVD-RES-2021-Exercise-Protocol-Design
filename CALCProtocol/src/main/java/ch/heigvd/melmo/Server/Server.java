@@ -43,6 +43,7 @@ public class Server {
         Socket clientSocket;
         BufferedReader in = null;
         PrintWriter out = null;
+        final char SPLIT_CHAR = ' ';
 
         public Calculator(Socket clientSocket){
             try {
@@ -53,6 +54,11 @@ public class Server {
                 e.printStackTrace();
             }
         }
+
+        private String[] parseRequest(String request){
+            return request.trim().split("\\s+");
+        }
+
         @Override
         public void run() {
             String line;
@@ -62,6 +68,8 @@ public class Server {
                 while((shouldRun) && (line = in.readLine()) != null){
                     if(line.equalsIgnoreCase("quit"))
                         shouldRun = false;
+
+                    String[] request = parseRequest(line);
 
                     out.println(line.toUpperCase());
                     out.flush();
