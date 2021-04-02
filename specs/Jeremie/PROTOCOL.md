@@ -17,7 +17,7 @@ The client, as the server can't be aware of all the potential clients.
 
 ## What is the sequence of messages exchanged by the client and the server ? (flow) 
 
-| ***Client***                  | ***Server***                    |
+| ***Client***                  | ***ch.heigvd.melmo.Server.Server***                    |
 | ----------------------------- | ------------------------------- |
 | 1. Broadcast message          | 2. Answer with port number      |
 | 3. Asks for connection        | 4. Accepts or refuses connection|

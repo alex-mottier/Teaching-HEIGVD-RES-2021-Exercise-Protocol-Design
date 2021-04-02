@@ -1,4 +1,4 @@
-package ch.heigvd.melmo;
+package ch.heigvd.melmo.Client;
 
 import java.io.*;
 import java.net.*;
@@ -11,12 +11,6 @@ public class Client {
     private BufferedReader in;
     final private String splitChar = " ";
     final private String EOL = " \r\n";
-
-    public static void main(String[] args) throws IOException{
-        Client client = new Client();
-        client.sendMessage("HELLO");
-        client.sendMessage("QUIT");
-    }
 
     public Client() throws IOException {
         this.startConnection();

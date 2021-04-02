@@ -17,11 +17,6 @@ public class Server {
         new Thread(new ClientReception()).start();
     }
 
-    public static void main(String[] args) {
-        Server server = new Server(1301);
-        server.serveClient();
-    }
-
     private class ClientReception implements Runnable{
         @Override
         public void run() {

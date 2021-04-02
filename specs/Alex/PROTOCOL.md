@@ -22,7 +22,7 @@ The client because the server does not know the potential clients
 
 ## What is the sequence of messages exchanged by the client and the server ? (flow) 
 
-| ***Client***                  | ***Server***                    |
+| ***Client***                  | ***ch.heigvd.melmo.Server.Server***                    |
 | ----------------------------- | ------------------------------- |
 | 1. Asks for connection        | 2. Grants or refuses connection |
 | 3. Sends operations           | 4. Sends the answer or an error |
