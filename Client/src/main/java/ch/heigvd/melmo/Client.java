@@ -9,6 +9,7 @@ public class Client {
     public String url = null;
     private PrintWriter out;
     private BufferedReader in;
+    final private String splitChar = " ";
 
     public Client() throws IOException {
         this.startConnection();
@@ -32,4 +33,10 @@ public class Client {
         this.socket.close();
     }
 
+    public String sendMessage(String msg) throws IOException {
+        this.out.println(msg);
+        String rawResponse = this.in.readLine();
+//        String[] response = rawResponse.trim().split(splitChar);
+        return rawResponse;
+    }
 }
