@@ -9,8 +9,8 @@ public class Main {
         Server server = new Server(1301);
         server.serveClient();
         Client client = new Client();
-        client.sendMessage("HELLO");
-        client.sendMessage("QUIT");
+        String coucou = client.sendMessage("hello");
+        String coucou2 = client.sendMessage("QUIT");
     }
 
 }

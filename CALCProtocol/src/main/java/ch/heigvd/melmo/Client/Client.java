@@ -36,8 +36,10 @@ public class Client {
 
     public String sendMessage(String msg) throws IOException {
         msg += this.EOL;
+        System.out.println("Client Send : " + msg);
         this.out.println(msg);
         String rawResponse = this.in.readLine();
+        System.out.println("Client Received : " + rawResponse);
 //        String[] response = rawResponse.trim().split(splitChar);
         return rawResponse;
     }

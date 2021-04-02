@@ -38,6 +38,13 @@ public class Server {
         }
     }
 
+    enum OPERATIONS {
+        ADD,
+        SUB,
+        MPY,
+        DIV,
+    }
+
     private class Calculator implements Runnable{
 
         Socket clientSocket;
@@ -61,17 +68,49 @@ public class Server {
 
         @Override
         public void run() {
-            String line;
+            String line, errorMsg = null;
             boolean shouldRun = true;
+            int MAX_OPERANDE = 4;
+            String[] request;
+            int result = 0;
+            boolean error = false;
 
             try{
                 while((shouldRun) && (line = in.readLine()) != null){
                     if(line.equalsIgnoreCase("quit"))
                         shouldRun = false;
 
-                    String[] request = parseRequest(line);
+                    request = parseRequest(line);
+                    switch(OPERATIONS.valueOf(request[1])){
+                        case ADD:
+                            result = Integer.parseInt(request[2]) + Integer.parseInt(request[3]);
+                            break;
+                        case SUB:
+                            result = Integer.parseInt(request[2]) - Integer.parseInt(request[3]);
+                            break;
+                        case MPY:
+                            result = Integer.parseInt(request[2]) * Integer.parseInt(request[3]);
+                            break;
+                        case DIV:{
+                            int divider = Integer.parseInt(request[3]);
+                            if(divider == 0){
+                                errorMsg = "DIVIDE_BY_0";
+                                error = true;
+                                break;
+                            }
+                            result = Integer.parseInt(request[2]) / divider;
+                            break;
+                        }
 
-                    out.println(line.toUpperCase());
+                        default:
+                            errorMsg = "OPERATION_NOT_FOUND";
+                            error = true;
+                            break;
+                    }
+                    if(error)
+                        out.println("ERROR " + errorMsg);
+                    else
+                        out.println("RESULT " + result);
                     out.flush();
                 }
 
