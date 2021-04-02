@@ -10,6 +10,13 @@ public class Client {
     private PrintWriter out;
     private BufferedReader in;
     final private String splitChar = " ";
+    final private String EOL = " \r\n";
+
+    public static void main(String[] args) throws IOException{
+        Client client = new Client();
+        client.sendMessage("HELLO");
+        client.sendMessage("QUIT");
+    }
 
     public Client() throws IOException {
         this.startConnection();
@@ -34,6 +41,7 @@ public class Client {
     }
 
     public String sendMessage(String msg) throws IOException {
+        msg += this.EOL;
         this.out.println(msg);
         String rawResponse = this.in.readLine();
 //        String[] response = rawResponse.trim().split(splitChar);
