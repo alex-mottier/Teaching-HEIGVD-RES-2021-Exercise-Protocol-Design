@@ -9,3 +9,12 @@ buildNumber.properties
 .mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+.idea/
+.idea/workspace.xml
+.idea/vcs.xml
+.idea/uiDesigner.xml
+.idea/Teaching-HEIGVD-RES-2021-Exercise-Protocol-Design.iml
+.idea/modules.xml
+.idea/misc.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
