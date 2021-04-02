@@ -17,6 +17,11 @@ public class Server {
         new Thread(new ClientReception()).start();
     }
 
+    public static void main(String[] args) {
+        Server server = new Server(1301);
+        server.serveClient();
+    }
+
     private class ClientReception implements Runnable{
         @Override
         public void run() {
@@ -38,11 +43,22 @@ public class Server {
         }
     }
 
+    enum COMMANDS {
+        HELLO,
+        ACK,
+        OPERATION,
+        RESULT,
+        ERROR,
+        QUIT,
+        UNKNOWN
+    }
+
     enum OPERATIONS {
         ADD,
         SUB,
         MPY,
         DIV,
+        UNKNOWN
     }
 
     private class Calculator implements Runnable{
@@ -51,6 +67,7 @@ public class Server {
         BufferedReader in = null;
         PrintWriter out = null;
         final char SPLIT_CHAR = ' ';
+        final String EOL = " \r\n";
 
         public Calculator(Socket clientSocket){
             try {
@@ -68,49 +85,78 @@ public class Server {
 
         @Override
         public void run() {
-            String line, errorMsg = null;
+            String line, errorMsg = null, resultMsg = null;
             boolean shouldRun = true;
-            int MAX_OPERANDE = 4;
             String[] request;
-            int result = 0;
-            boolean error = false;
+            boolean error = false, connectionOpened = false;
+            COMMANDS command = null;
+            OPERATIONS operation = null;
 
             try{
                 while((shouldRun) && (line = in.readLine()) != null){
-                    if(line.equalsIgnoreCase("quit"))
-                        shouldRun = false;
-
                     request = parseRequest(line);
-                    switch(OPERATIONS.valueOf(request[1])){
-                        case ADD:
-                            result = Integer.parseInt(request[2]) + Integer.parseInt(request[3]);
+                    try{
+                        command = COMMANDS.valueOf(request[0]);
+                    } catch (IllegalArgumentException ex) {
+                        command = COMMANDS.UNKNOWN;
+                    }
+                    switch(command){
+                        case HELLO:
+                            connectionOpened = true;
+                            resultMsg = COMMANDS.ACK.name();
                             break;
-                        case SUB:
-                            result = Integer.parseInt(request[2]) - Integer.parseInt(request[3]);
-                            break;
-                        case MPY:
-                            result = Integer.parseInt(request[2]) * Integer.parseInt(request[3]);
-                            break;
-                        case DIV:{
-                            int divider = Integer.parseInt(request[3]);
-                            if(divider == 0){
-                                errorMsg = "DIVIDE_BY_0";
+                        case OPERATION:
+                            if(connectionOpened){
+                                try{
+                                    operation = OPERATIONS.valueOf(request[1]);
+                                } catch (IllegalArgumentException ex) {
+                                    operation = OPERATIONS.UNKNOWN;
+                                }
+                                switch(operation) {
+                                    case ADD:
+                                        resultMsg = COMMANDS.RESULT.name() + this.SPLIT_CHAR + (Integer.parseInt(request[2]) + Integer.parseInt(request[3]));
+                                        break;
+                                    case SUB:
+                                        resultMsg = COMMANDS.RESULT.name() + this.SPLIT_CHAR + (Integer.parseInt(request[2]) - Integer.parseInt(request[3]));
+                                        break;
+                                    case MPY:
+                                        resultMsg = COMMANDS.RESULT.name() + this.SPLIT_CHAR + (Integer.parseInt(request[2]) * Integer.parseInt(request[3]));
+                                        break;
+                                    case DIV: {
+                                        int divider = Integer.parseInt(request[3]);
+                                        if (divider == 0) {
+                                            errorMsg = "DIVIDE_BY_0";
+                                            error = true;
+                                            break;
+                                        }
+                                        resultMsg = COMMANDS.RESULT.name() + this.SPLIT_CHAR + (Integer.parseInt(request[2]) / divider);
+                                        break;
+                                    }
+                                    case UNKNOWN:
+                                        errorMsg = "OPERATION_NOT_FOUND";
+                                        error = true;
+                                        break;
+                                }
+                            }else{
                                 error = true;
-                                break;
+                                errorMsg = "NO_CONNECTION";
                             }
-                            result = Integer.parseInt(request[2]) / divider;
                             break;
-                        }
-
-                        default:
-                            errorMsg = "OPERATION_NOT_FOUND";
+                        case QUIT:
+                            connectionOpened = false;
+                            shouldRun = false;
+                            break;
+                        case UNKNOWN:
                             error = true;
+                            errorMsg = "UNKNOWN_COMMAND";
                             break;
                     }
-                    if(error)
-                        out.println("ERROR " + errorMsg);
-                    else
-                        out.println("RESULT " + result);
+                    if(error) {
+                        out.print(COMMANDS.ERROR.name() + SPLIT_CHAR + errorMsg + this.EOL);
+                        error = false;
+                    } else if(shouldRun){
+                        out.print(resultMsg + this.EOL);
+                    }
                     out.flush();
                 }
 
