@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Locale;
 
 public class Server {
     int port;
@@ -14,6 +13,11 @@ public class Server {
 
     public void serveClient(){
         new Thread(new ClientReception()).start();
+    }
+
+    public static void main(String[] args) {
+        Server server = new Server(1301);
+        server.serveClient();
     }
 
     private class ClientReception implements Runnable{
